@@ -24,7 +24,19 @@ async function getSurah() {
   const data = await fetch("https://api.qurancdn.com/api/qdc/chapters").then(
     (resp) => resp.json(),
   );
-  fs.writeFileSync("./surah.json", JSON.stringify(data, null, 2), "utf8");
+  const formatData = data.chapters.map((item) => {
+    delete item.slug;
+    delete item.translated_name;
+    const [pageStart, pageEnd] = item.pages;
+    delete item.pages;
+
+    return { ...item, pageStart, pageEnd };
+  });
+  fs.writeFileSync(
+    "./surah.json",
+    JSON.stringify({ chapters: formatData }, null, 2),
+    "utf8",
+  );
 }
 
 getSurah();
